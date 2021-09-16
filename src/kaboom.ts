@@ -54,8 +54,6 @@ import {
 	netInit,
 } from "./net";
 
-import kaboomPlugin from "./plugins/kaboom";
-
 class IDList<T> extends Map<number, T> {
 	_lastID: number;
 	constructor(...args) {
@@ -116,7 +114,7 @@ const logger = loggerInit(gfx, assets, {
 	max: gconf.logMax,
 });
 
-const DEF_FONT = "apl386o";
+const DEF_FONT = "sink";
 const DBG_FONT = "sink";
 
 function dt() {
@@ -2161,7 +2159,7 @@ function scene(id: SceneID, def: SceneDef) {
 function go(id: SceneID, ...args) {
 
 	if (!game.scenes[id]) {
-		throw new Error(`scene not found: ${id}`);
+		throw new Error(`scene not found: ${id.toString()}`);
 	}
 
 	game.on("next", () => {
@@ -2393,7 +2391,6 @@ const ctx: KaboomCtx = {
 	loadShader: assets.loadShader,
 	loadAseprite: assets.loadAseprite,
 	loadPedit: assets.loadPedit,
-	loadBean: assets.loadBean,
 	load: assets.load,
 	// query
 	width,
@@ -2487,7 +2484,6 @@ const ctx: KaboomCtx = {
 	// audio
 	play,
 	volume: audio.volume,
-	burp: audio.burp,
 	audioCtx: audio.ctx,
 	// math
 	rng,
@@ -2537,8 +2533,6 @@ const ctx: KaboomCtx = {
 	// dom
 	canvas: app.canvas,
 };
-
-plug(kaboomPlugin);
 
 if (gconf.plugins) {
 	gconf.plugins.forEach(plug);

@@ -14,7 +14,6 @@ type Audio = {
 	ctx: AudioContext,
 	volume(v: number): number,
 	play(sound: AudioBuffer, conf?: AudioPlayConf): AudioPlay,
-	burp(conf?: AudioPlayConf): AudioPlay,
 };
 
 const MIN_GAIN = 0;
@@ -24,8 +23,6 @@ const MAX_SPEED = 3;
 const MIN_DETUNE = -1200;
 const MAX_DETUNE = 1200;
 
-// @ts-ignore
-import burpBytes from "./burp.mp3";
 
 function audioInit(): Audio {
 
@@ -45,14 +42,6 @@ function audioInit(): Audio {
 		};
 
 	})();
-
-	let burpBuf;
-
-	audio.ctx.decodeAudioData(burpBytes.buffer.slice(0), (buf) => {
-		burpBuf = buf;
-	}, () => {
-		throw new Error("failed to make burp")
-	});
 
 	// get / set master volume
 	function volume(v?: number): number {
@@ -202,15 +191,10 @@ function audioInit(): Audio {
 
 	}
 
-	function burp(conf?: AudioPlayConf): AudioPlay {
-		return play(burpBuf, conf);
-	}
-
 	return {
 		ctx: audio.ctx,
 		volume,
 		play,
-		burp,
 	};
 
 }

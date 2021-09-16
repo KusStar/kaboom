@@ -801,20 +801,6 @@ interface KaboomCtx {
 	): Promise<SpriteData>,
 	loadPedit(name: string, src: string): Promise<SpriteData>,
 	/**
-	 * Load default sprite "bean".
-	 *
-	 * @example
-	 * ```js
-	 * loadBean();
-	 *
-	 * // use it right away
-	 * add([
-	 *     sprite("bean"),
-	 * ]);
-	 * ```
-	 */
-	loadBean(name?: string): Promise<SpriteData>,
-	/**
 	 * Load a sound into asset manager, with name and resource url.
 	 *
 	 * @example
@@ -1106,10 +1092,6 @@ interface KaboomCtx {
 	 * ```
 	 */
 	play(id: string, conf?: AudioPlayConf): AudioPlay,
-	/**
-	 * Yep.
-	 */
-	burp(conf?: AudioPlayConf): AudioPlay,
 	/**
 	 * Sets global volume.
 	 *
@@ -1511,7 +1493,7 @@ interface KaboomConf {
 	 */
 	debug?: boolean,
 	/**
-	 * Default font (defaults to "apl386o", with "apl386", "sink", "sinko" as other built-in options).
+	 * Default font "sink".
 	 */
 	font?: string,
 	/**
@@ -1560,7 +1542,7 @@ type KaboomPlugin<T> = (k: KaboomCtx) => T;
 
 type GameObj<T> = GameObjRaw & MergeComps<T>;
 
-type SceneID = string;
+type SceneID = string | symbol;
 type SceneDef = (...args: any[]) => void;
 type TouchID = number;
 

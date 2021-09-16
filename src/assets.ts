@@ -11,15 +11,7 @@ import {
 } from "./gfx";
 
 // @ts-ignore
-import apl386Src from "./apl386.png";
-// @ts-ignore
-import apl386oSrc from "./apl386o.png";
-// @ts-ignore
 import sinkSrc from "./sink.png";
-// @ts-ignore
-import sinkoSrc from "./sinko.png";
-// @ts-ignore
-import beanSrc from "./bean.png";
 
 type AssetsConf = {
 	errHandler?: (err: string) => void,
@@ -58,7 +50,6 @@ type Assets = {
 		jsonSrc: string
 	): Promise<SpriteData>,
 	loadPedit(name: string, src: string): Promise<SpriteData>,
-	loadBean(name?: string): Promise<SpriteData>,
 	loadSound(
 		name: string | null,
 		src: string,
@@ -474,24 +465,6 @@ function assetsInit(gfx: Gfx, audio: Audio, gconf: AssetsConf = {}): Assets {
 
 	}
 
-	function loadBean(name: string = "bean"): Promise<SpriteData> {
-		return loadSprite(name, beanSrc);
-	}
-
-	loadFont(
-		"apl386",
-		apl386Src,
-		45,
-		74,
-	);
-
-	loadFont(
-		"apl386o",
-		apl386oSrc,
-		45,
-		74,
-	);
-
 	loadFont(
 		"sink",
 		sinkSrc,
@@ -502,20 +475,12 @@ function assetsInit(gfx: Gfx, audio: Audio, gconf: AssetsConf = {}): Assets {
 		}
 	);
 
-	loadFont(
-		"sinko",
-		sinkoSrc,
-		8,
-		10,
-	);
-
 	return {
 		loadRoot,
 		loadSprite,
 		loadSpriteAtlas,
 		loadPedit,
 		loadAseprite,
-		loadBean,
 		loadSound,
 		loadFont,
 		loadShader,

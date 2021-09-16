@@ -9,9 +9,6 @@ const input = add([
 
 // list of built-in fonts ("o" at the end means the outlined version)
 const fonts = [
-	"apl386o",
-	"apl386",
-	"sinko",
 	"sink",
 ];
 

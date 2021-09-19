@@ -10,7 +10,7 @@
 
 (these are for the newest beta version or `kaboom@next`)
 
-Lots of iteractive examples [here](https://kaboomjs.com/examples)
+Lots of iteractive examples [here](https://kaboomjs.com/demo)
 
 ```html
 <script type="module">
@@ -184,3 +184,4 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 - Featured on [Console 50](https://console.substack.com/p/console-50)
 - Thanks to [Umayr](https://github.com/umayr) for kindly offering the "kaboom" npm package name
 - Please buy fireworks on [kaboom.com](http://www.kaboom.com/)
+- Old v5.0 website [here](https://kaboomold.slmjkdbtl.repl.co/)

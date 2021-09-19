@@ -45,11 +45,11 @@ type Assets = {
 		url: string,
 	): Promise<Record<string, SpriteData>>,
 	loadAseprite(
-		name: string,
+		name: string | null,
 		imgSrc: SpriteLoadSrc,
 		jsonSrc: string
 	): Promise<SpriteData>,
-	loadPedit(name: string, src: string): Promise<SpriteData>,
+	loadPedit(name: string | null, src: string): Promise<SpriteData>,
 	loadSound(
 		name: string | null,
 		src: string,
@@ -202,6 +202,7 @@ function assetsInit(gfx: Gfx, audio: Audio, gconf: AssetsConf = {}): Assets {
 		data: SpriteAtlasData | string
 	): Promise<Record<string, SpriteData>> {
 		if (typeof data === "string") {
+			// TODO: this adds a new loader asyncly
 			return load(fetch(loadRoot() + data)
 				.then((res) => res.json())
 				.then((data2) => loadSpriteAtlas(src, data2)));

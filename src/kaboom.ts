@@ -5,6 +5,7 @@ import {
 	rgb,
 	rng,
 	rand,
+	randi,
 	randSeed,
 	chance,
 	choose,
@@ -54,23 +55,10 @@ import {
 	netInit,
 } from "./net";
 
-class IDList<T> extends Map<number, T> {
-	_lastID: number;
-	constructor(...args) {
-		super(...args);
-		this._lastID = 0;
-	}
-	push(v: T): number {
-		const id = this._lastID;
-		this.set(id, v);
-		this._lastID++;
-		return id;
-	}
-	pushd(v: T): () => void {
-		const id = this.push(v);
-		return () => this.delete(id);
-	}
-}
+
+import {
+	IDList,
+} from "./utils";
 
 // @ts-ignore
 module.exports = (gconf: KaboomConf = {}): KaboomCtx => {
@@ -1496,6 +1484,7 @@ function area(conf: AreaCompConf = {}): AreaComp {
 			every((other) => this.pushOut(other));
 		},
 
+		// @ts-ignore
 		_checkCollisions(tag: Tag) {
 
 			every(tag, (obj) => {
@@ -1571,6 +1560,7 @@ interface SpriteCurAnim {
 	loop: boolean,
 	speed: number,
 	pingpong: boolean,
+	onEnd: () => void,
 }
 
 // TODO: clean
@@ -1683,6 +1673,7 @@ function sprite(id: string | SpriteData, conf: SpriteCompConf = {}): SpriteComp 
 						} else {
 							this.frame++;
 							this.stop();
+							curAnim.onEnd();
 						}
 					}
 				} else {
@@ -1693,6 +1684,7 @@ function sprite(id: string | SpriteData, conf: SpriteCompConf = {}): SpriteComp 
 						} else {
 							this.frame--;
 							this.stop();
+							curAnim.onEnd();
 						}
 					}
 				}
@@ -1712,7 +1704,7 @@ function sprite(id: string | SpriteData, conf: SpriteCompConf = {}): SpriteComp 
 
 			const anim = spr.anims[name];
 
-			if (!anim) {
+			if (anim == null) {
 				throw new Error(`anim not found: ${name}`);
 			}
 
@@ -1726,6 +1718,7 @@ function sprite(id: string | SpriteData, conf: SpriteCompConf = {}): SpriteComp 
 				loop: conf.loop ?? anim.loop ?? false,
 				pingpong: conf.pingpong ?? anim.pingpong ?? false,
 				speed: conf.speed ?? anim.speed ?? 10,
+				onEnd: conf.onEnd ?? (() => {}),
 			};
 
 			if (typeof anim === "number") {
@@ -2094,6 +2087,9 @@ function health(hp: number): HealthComp {
 				this.trigger("death");
 			}
 		},
+		inspect() {
+			return `${hp}`;
+		},
 	};
 }
 
@@ -2247,7 +2243,8 @@ function grid(level: Level, p: Vec2) {
 		id: "grid",
 		gridPos: p.clone(),
 
-		setGridPos(p: Vec2) {
+		setGridPos(...args) {
+			const p = vec2(...args);
 			this.gridPos = p.clone();
 			this.pos = vec2(
 				level.offset().x + this.gridPos.x * level.gridWidth(),
@@ -2300,7 +2297,6 @@ function addLevel(map: string[], conf: LevelConf): Level {
 		},
 
 		getPos(...args): Vec2 {
-			// @ts-ignore
 			const p = vec2(...args);
 			return vec2(
 				offset.x + p.x * conf.width,
@@ -2308,7 +2304,9 @@ function addLevel(map: string[], conf: LevelConf): Level {
 			);
 		},
 
-		spawn(sym: string, p: Vec2): GameObj<any> {
+		spawn(sym: string, ...args): GameObj<any> {
+
+			const p = vec2(...args);
 
 			const comps = (() => {
 				if (conf[sym]) {
@@ -2488,6 +2486,7 @@ const ctx: KaboomCtx = {
 	// math
 	rng,
 	rand,
+	randi,
 	randSeed,
 	vec2,
 	dir,

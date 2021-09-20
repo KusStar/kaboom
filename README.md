@@ -4,7 +4,7 @@
 
 **NOTE**: still in early active development, expect breaking changes and lots of new features (check out `CHANGELOG.md` for these).
 
-## This fork shrink bundle(dist/kaboom.*js) from 18XK to 6XK(removed some images and audio), based on kaboom@2000.0.0-beta.16
+## This fork shrink bundle(dist/kaboom.*js) from 18XK to 6XK(removed some images and audio), based on kaboom@next
 
 ## Examples
 

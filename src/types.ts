@@ -93,22 +93,10 @@ interface KaboomCtx {
 	 *     friend.hurt();
 	 * });
 	 *
-	 * // check out #GameObjRaw for stuff that exists for all game objects, independent of its components.
+	 * // check out #CharacterRaw for stuff that exists for all game objects, independent of its components.
 	 * ```
 	 */
-	add<T>(comps: CompList<T>): GameObj<T>,
-	/**
-	 * Remove the game obj.
-	 *
-	 * @example
-	 * ```js
-	 * // every time froggy collides with anything with tag "fruit", remove it
-	 * froggy.collides("fruit", (fruit) => {
-	 *     destroy(fruit);
-	 * });
-	 * ```
-	 */
-	destroy(obj: GameObj<any>): void,
+	add<T>(comps: CompList<T>): Character<T>,
 	/**
 	 * Get a list of all game objs with certain tag.
 	 *
@@ -121,7 +109,7 @@ interface KaboomCtx {
 	 * const allObjs = get();
 	 * ```
 	 */
-	get(tag?: Tag): GameObj<any>[],
+	get(tag?: Tag): Character<any>[],
 	/**
 	 * Run callback on every game obj with certain tag.
 	 *
@@ -134,13 +122,13 @@ interface KaboomCtx {
 	 * every((obj) => {});
 	 * ```
 	 */
-	every<T>(t: Tag, cb: (obj: GameObj<any>) => T): void,
-	every<T>(cb: (obj: GameObj<any>) => T): void,
+	every<T>(t: Tag, cb: (obj: Character<any>) => T): void,
+	every<T>(cb: (obj: Character<any>) => T): void,
 	/**
 	 * Run callback on every game obj with certain tag in reverse order.
 	 */
-	revery<T>(t: Tag, cb: (obj: GameObj<any>) => T): void,
-	revery<T>(cb: (obj: GameObj<any>) => T): void,
+	revery<T>(t: Tag, cb: (obj: Character<any>) => T): void,
+	revery<T>(cb: (obj: Character<any>) => T): void,
 	/**
 	 * Remove and re-add the game obj.
 	 *
@@ -150,77 +138,19 @@ interface KaboomCtx {
 	 * readd(froggy);
 	 * ```
 	 */
-	readd(obj: GameObj<any>): GameObj<any>,
+	readd(obj: Character<any>): Character<any>,
 	/**
-	 * Register an event on all game objs with certain tag.
+	 * Remove the game obj.
 	 *
 	 * @example
 	 * ```js
-	 * // a custom event defined by body() comp
-	 * // every time an obj with tag "bomb" hits the floor, destroy it and addKaboom()
-	 * on("ground", "bomb", (bomb) => {
-	 *     destroy(bomb);
-	 *     addKaboom();
+	 * // every time froggy collides with anything with tag "fruit", remove it
+	 * froggy.collides("fruit", (fruit) => {
+	 *     destroy(fruit);
 	 * });
 	 * ```
 	 */
-	on(event: string, tag: Tag, cb: (obj: GameObj<any>, ...args) => void): EventCanceller,
-	/**
-	 * Register "update" event (runs every frame) on all game objs with certain tag.
-	 *
-	 * @example
-	 * ```js
-	 * // move every "tree" 120 pixels per second to the left, destroy it when it leaves screen
-	 * // there'll be nothing to run if there's no "tree" obj in the scene
-	 * action("tree", (tree) => {
-	 *     tree.move(-120, 0);
-	 *     if (tree.pos.x < 0) {
-	 *         destroy(tree);
-	 *     }
-	 * });
-	 *
-	 * // without tags it just runs it every frame
-	 * action(() => {
-	 *     debug.log("ohhi");
-	 * });
-	 * ```
-	 */
-	action(tag: Tag, cb: (obj: GameObj<any>) => void): EventCanceller,
-	action(cb: () => void): EventCanceller,
-	/**
-	 * Register "draw" event (runs every frame) on all game objs with certain tag. (This is the same as `action()`, but all draw events are run after updates)
-	 */
-	render(tag: Tag, cb: (obj: GameObj<any>) => void): EventCanceller,
-	render(cb: () => void): EventCanceller,
-	/**
-	 * Register event when 2 game objs with certain tags collides. This function spins off an action() when called, please put it at root level and never inside another action().
-	 *
-	 * @example
-	 * ```js
-	 * collides("sun", "earth", () => {
-	 *     addExplosion();
-	 * });
-	 * ```
-	 */
-	collides(
-		t1: Tag,
-		t2: Tag,
-		cb: (a: GameObj<any>, b: GameObj<any>, side?: RectSide) => void,
-	): EventCanceller,
-	/**
-	 * Register event when game objs with certain tags are clicked. This function spins off an action() when called, please put it at root level and never inside another action().
-	 */
-	clicks(
-		tag: Tag,
-		cb: (a: GameObj<any>) => void,
-	): EventCanceller,
-	/**
-	 * Register event when game objs with certain tags are hovered. This function spins off an action() when called, please put it at root level and never inside another action().
-	 */
-	hovers(
-		tag: Tag,
-		cb: (a: GameObj<any>) => void,
-	): EventCanceller,
+	destroy(obj: Character<any>): void,
 	/**
 	 * Remove all game objs with certain tag.
 	 *
@@ -484,7 +414,7 @@ interface KaboomCtx {
 	/**
 	 * Follow another game obj's position.
 	 */
-	follow(obj: GameObj<any> | null, offset?: Vec2): FollowComp,
+	follow(obj: Character<any> | null, offset?: Vec2): FollowComp,
 	/**
 	 * Custom shader.
 	 */
@@ -566,6 +496,78 @@ interface KaboomCtx {
 	 * ```
 	 */
 	lifespan(time: number, action?: () => void): LifespanComp,
+	/**
+	 * Register an event on all game objs with certain tag.
+	 *
+	 * @section Events
+	 *
+	 * @example
+	 * ```js
+	 * // a custom event defined by body() comp
+	 * // every time an obj with tag "bomb" hits the floor, destroy it and addKaboom()
+	 * on("ground", "bomb", (bomb) => {
+	 *     destroy(bomb);
+	 *     addKaboom();
+	 * });
+	 * ```
+	 */
+	on(event: string, tag: Tag, cb: (obj: Character<any>, ...args) => void): EventCanceller,
+	/**
+	 * Register "update" event (runs every frame) on all game objs with certain tag.
+	 *
+	 * @example
+	 * ```js
+	 * // move every "tree" 120 pixels per second to the left, destroy it when it leaves screen
+	 * // there'll be nothing to run if there's no "tree" obj in the scene
+	 * action("tree", (tree) => {
+	 *     tree.move(-120, 0);
+	 *     if (tree.pos.x < 0) {
+	 *         destroy(tree);
+	 *     }
+	 * });
+	 *
+	 * // without tags it just runs it every frame
+	 * action(() => {
+	 *     debug.log("ohhi");
+	 * });
+	 * ```
+	 */
+	action(tag: Tag, cb: (obj: Character<any>) => void): EventCanceller,
+	action(cb: () => void): EventCanceller,
+	/**
+	 * Register "draw" event (runs every frame) on all game objs with certain tag. (This is the same as `action()`, but all draw events are run after updates)
+	 */
+	render(tag: Tag, cb: (obj: Character<any>) => void): EventCanceller,
+	render(cb: () => void): EventCanceller,
+	/**
+	 * Register event when 2 game objs with certain tags collides. This function spins off an action() when called, please put it at root level and never inside another action().
+	 *
+	 * @example
+	 * ```js
+	 * collides("sun", "earth", () => {
+	 *     addExplosion();
+	 * });
+	 * ```
+	 */
+	collides(
+		t1: Tag,
+		t2: Tag,
+		cb: (a: Character<any>, b: Character<any>, side?: RectSide) => void,
+	): EventCanceller,
+	/**
+	 * Register event when game objs with certain tags are clicked. This function spins off an action() when called, please put it at root level and never inside another action().
+	 */
+	clicks(
+		tag: Tag,
+		cb: (a: Character<any>) => void,
+	): EventCanceller,
+	/**
+	 * Register event when game objs with certain tags are hovered. This function spins off an action() when called, please put it at root level and never inside another action().
+	 */
+	hovers(
+		tag: Tag,
+		cb: (a: Character<any>) => void,
+	): EventCanceller,
 	/**
 	 * Get current mouse position (without camera transform).
 	 *
@@ -1416,9 +1418,9 @@ type Key =
 	| "left" | "right" | "up" | "down"
 	;
 
-interface GameObjRaw {
+interface CharacterRaw {
 	/**
-	 * Internal GameObj ID.
+	 * Internal Character ID.
 	 */
 	_id: number | null,
 	/**
@@ -1437,12 +1439,12 @@ interface GameObjRaw {
 	 * If there a certain tag on the game obj.
 	 */
 	is(tag: Tag | Tag[]): boolean;
-	// TODO: update the GameObj type info
+	// TODO: update the Character type info
 	/**
 	 * Add a component or tag.
 	 */
 	use(comp: Comp | Tag): void;
-	// TODO: update the GameObj type info
+	// TODO: update the Character type info
 	/**
 	 * Remove a tag or a component with its id.
 	 */
@@ -1470,8 +1472,13 @@ interface GameObjRaw {
 	/**
 	 * Gather debug info of all comps.
 	 */
-	inspect(): Record<Tag, string | null>;
+	inspect(): CharacterInspect;
 }
+
+/**
+ * Inspect info for a character.
+ */
+type CharacterInspect = Record<Tag, string | null>;
 
 /**
  * Kaboom configurations.
@@ -1549,7 +1556,10 @@ interface KaboomConf {
 
 type KaboomPlugin<T> = (k: KaboomCtx) => T;
 
-type GameObj<T> = GameObjRaw & MergeComps<T>;
+/**
+ * A character in game. The basic unit of object in Kaboom. The player, a bullet, a tree, a piece of text, they're all characters!
+ */
+type Character<T> = CharacterRaw & MergeComps<T>;
 
 type SceneID = string | symbol;
 type SceneDef = (...args: any[]) => void;
@@ -1560,6 +1570,9 @@ type TouchID = number;
  */
 type EventCanceller = () => void;
 
+/**
+ * Frame-based animation configuration.
+ */
 type SpriteAnim = number | {
 	/**
 	 * The starting frame.
@@ -1583,6 +1596,9 @@ type SpriteAnim = number | {
 	speed?: number,
 }
 
+/**
+ * Sprite animation configuration when playing.
+ */
 interface SpriteAnimPlayConf {
 	/**
 	 * If this anim should be played in loop.
@@ -1621,13 +1637,37 @@ interface SpriteLoadConf {
 
 type SpriteAtlasData = Record<string, SpriteAtlasEntry>;
 
+/**
+ * A sprite in a sprite atlas.
+ */
 interface SpriteAtlasEntry {
+	/**
+	 * X position of the top left corner.
+	 */
 	x: number,
+	/**
+	 * Y position of the top left corner.
+	 */
 	y: number,
+	/**
+	 * Sprite area width.
+	 */
 	width: number,
+	/**
+	 * Sprite area height.
+	 */
 	height: number,
+	/**
+	 * If the defined area contains multiple sprites, how many frames are in the area hozizontally.
+	 */
 	sliceX?: number,
+	/**
+	 * If the defined area contains multiple sprites, how many frames are in the area vertically.
+	 */
 	sliceY?: number,
+	/**
+	 * Animation configuration.
+	 */
 	anims?: SpriteAnims,
 }
 
@@ -1647,10 +1687,17 @@ interface FontLoadConf {
 	wrap?: TexWrap,
 }
 
-type SoundData = AudioBuffer;
+interface SoundData {
+	buf: AudioBuffer,
+}
+
 type FontData = GfxFont;
 type ShaderData = GfxProgram;
 
+// TODO: enable setting on load, make part of SoundData
+/**
+ * Audio play configurations.
+ */
 interface AudioPlayConf {
 	loop?: boolean,
 	volume?: number,
@@ -2047,7 +2094,7 @@ interface Comp {
 	inspect?: () => string;
 }
 
-type GameObjID = number;
+type CharacterID = number;
 
 interface PosComp extends Comp {
 	id: "pos",
@@ -2126,7 +2173,7 @@ interface ZComp extends Comp {
 interface FollowComp extends Comp {
 	id: "follow",
 	follow: {
-		obj: GameObj<any>,
+		obj: Character<any>,
 		offset: Vec2,
 	},
 }
@@ -2190,11 +2237,11 @@ interface AreaComp extends Comp {
 	/**
 	 * If is currently colliding with another game obj.
 	 */
-	isColliding(o: GameObj<any>): boolean,
+	isColliding(o: Character<any>): boolean,
 	/**
 	 * If is currently touching another game obj.
 	 */
-	isTouching(o: GameObj<any>): boolean,
+	isTouching(o: Character<any>): boolean,
 	/**
 	 * Registers an event runs when clicked.
 	 */
@@ -2206,7 +2253,7 @@ interface AreaComp extends Comp {
 	/**
 	 * Registers an event runs when collides with another game obj with certain tag.
 	 */
-	collides(tag: Tag, f: (obj: GameObj<any>, side?: RectSide) => void): void,
+	collides(tag: Tag, f: (obj: Character<any>, side?: RectSide) => void): void,
 	/**
 	 * If has a certain point inside collider.
 	 */
@@ -2214,7 +2261,7 @@ interface AreaComp extends Comp {
 	/**
 	 * Push out from another solid game obj if currently overlapping.
 	 */
-	pushOut(obj: GameObj<any>): void,
+	pushOut(obj: Character<any>): void,
 	/**
 	 * Push out from all other solid game objs if currently overlapping.
 	 *
@@ -2468,7 +2515,7 @@ interface BodyComp extends Comp {
 	/**
 	 * Current platform landing on.
 	 */
-	curPlatform(): GameObj<any> | null;
+	curPlatform(): Character<any> | null;
 	/**
 	 * If currently landing on a platform.
 	 */
@@ -2605,8 +2652,8 @@ interface LevelConf {
 interface Level {
 	getPos(p: Vec2): Vec2,
 	getPos(x: number, y: number): Vec2,
-	spawn(sym: string, p: Vec2): GameObj<any>,
-	spawn(sym: string, x: number, y: number): GameObj<any>,
+	spawn(sym: string, p: Vec2): Character<any>,
+	spawn(sym: string, x: number, y: number): Character<any>,
 	width(): number,
 	height(): number,
 	gridWidth(): number,

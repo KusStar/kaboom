@@ -54,6 +54,7 @@ keyDown("left", () => {
 - added comp `opacity()` to set opacity
 - added comp `health()` to manage health related logic
 - added comp `move()` to manage projectile-like behavior
+- added comp `cleanup()` to auto destroy obj when it leaves screen
 - added comp `outline()` to draw a lil outline
 - added comp `timer()` to attach timers to a game obj
 - added comp `fixed()` to make a game obj unaffected by camera
@@ -195,6 +196,7 @@ addLevel([
 	],
 })
 ```
+- **BREAK** renamed `clearColor` to `background`
 
 ### v0.5.1
 - added plugins npm package support e.g. `import asepritePlugin from "kaboom/plugins/aseprite"`

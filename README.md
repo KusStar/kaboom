@@ -109,7 +109,7 @@ action("enemy", (e) => {
 
 // move up 100 pixels per second every frame when "w" key is held down
 keyDown("w", () => {
-    player.move(0, 100),
+    player.move(0, 100);
 });
 ```
 
@@ -138,6 +138,8 @@ also works with CJS
 const kaboom = require("kaboom");
 ```
 
+Note that you'll need to use a bundler like `esbuild` or `webpack` to use Kaboom with NPM
+
 ### Browser CDN
 
 This exports a global `kaboom` function
@@ -151,7 +153,7 @@ kaboom();
 
 or use with es modules
 
-```js
+```html
 <script type="module">
 import kaboom from "https://unpkg.com/kaboom@next/dist/kaboom.mjs";
 kaboom();
@@ -172,7 +174,7 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 
 [Github Discussions](https://github.com/replit/kaboom/discussions)
 
-[Discord](https://discord.gg/PCPMteZU)
+[Discord](https://discord.gg/aQ6RuQm3TF)
 
 ### Misc
 
@@ -185,3 +187,4 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 - Thanks to [Umayr](https://github.com/umayr) for kindly offering the "kaboom" npm package name
 - Please buy fireworks on [kaboom.com](http://www.kaboom.com/)
 - Old v5.0 website [here](https://kaboomold.slmjkdbtl.repl.co/)
+- [How to do a KABOOM on a Trampoline](https://www.youtube.com/watch?v=3CemcWdc_Hc)

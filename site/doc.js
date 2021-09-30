@@ -1,10 +1,11 @@
 const fs = require("fs");
+const path = require("path");
 const marked = require("marked");
 const hljs = require("highlight.js");
 const www = require("./www");
 const global = require("./global");
 const getTypes = require("./getTypes");
-const types = getTypes(fs.readFileSync("./../dist/kaboom.d.ts", "utf-8"));
+const types = getTypes(fs.readFileSync(path.resolve(__dirname, "../dist/kaboom.d.ts"), "utf-8"));
 const t = www.tag;
 
 marked.setOptions({
@@ -181,8 +182,7 @@ const css = {
 		"display": "flex",
 	},
 	"#sidebar": {
-		...www.vspace(12),
-		"background": "#f5f5f5",
+		"background": "var(--color-bg2)",
 		"width": "240px",
 		"padding": "24px",
 		"overflow": "scroll",
@@ -192,11 +192,12 @@ const css = {
 			},
 		},
 		"#logo": {
-			"width": "60%",
+			"width": "70%",
 		},
 		".title": {
 			"font-weight": "bold",
 			"font-size": "24px",
+			"color": "var(--color-fg2)",
 		},
 		"#index": {
 			...www.vspace(16),
@@ -207,12 +208,12 @@ const css = {
 				"font-family": "IBM Plex Mono",
 				"display": "table",
 				"text-decoration": "none",
-				"color": "#333333",
+				"color": "var(--color-fg)",
 				"padding": "2px 6px",
 				"border-radius": "6px",
 				":hover": {
 					"color": "#ffffff !important",
-					"background": "#0080ff",
+					"background": "var(--color-highlight)",
 				},
 				":visited": {
 					"color": "inherit",
@@ -223,7 +224,7 @@ const css = {
 	"#content": {
 		"overflow": "scroll",
 		"padding": "48px",
-		"background": "#ffffff",
+		"background": "var(--color-bg)",
 		"flex": "1",
 		...www.vspace(24),
 		".block": {
@@ -231,8 +232,8 @@ const css = {
 		},
 		".title": {
 			"padding": "6px 12px",
-			"background": "#fff8bc",
-			"color": "#333333",
+			"background": "var(--color-title-bg)",
+			"color": "var(--color-fg)",
 			"font-size": "24px",
 			"font-weight": "bold",
 			"display": "inline-block",
@@ -247,7 +248,7 @@ const css = {
 		},
 		".desc": {
 			"font-size": "24px",
-			"color": "#666666",
+			"color": "var(--color-fg2)",
 		},
 		".item": {
 			...www.vspace(12),
@@ -257,15 +258,15 @@ const css = {
 			"font-family": "IBM Plex Mono",
 		},
 		".typesig": {
-			"color": "#999999",
+			"color": "var(--color-fg2)",
 			"font-family": "IBM Plex Mono",
 			"a": {
-				"color": "#999999",
+				"color": "var(--color-fg2)",
 				":hover": {
-					"color": "#666666 !important",
+					"color": "var(--color-fg3) !important",
 				},
 				":visited": {
-					"color": "#999999",
+					"color": "var(--color-fg2)",
 				},
 			},
 		},
@@ -297,32 +298,45 @@ const page = t("html", {}, [
 		t("title", {}, "KaBoom!!!"),
 		t("style", {}, www.css(css)),
 		t("link", { rel: "stylesheet", href: "/site/css/paraiso.css"}),
-		t("script", { src: "/site/js/doc.js", }, ""),
 	]),
 	t("body", {}, [
 		t("div", { id: "sidebar", }, [
-			t("a", { href: "/", }, [
+			t("a", { href: "/" }, [
 				t("img", { id: "logo", src: "/site/img/kaboom.svg" }),
 			]),
-			t("div", { id: "index" }, sections.map((sec) => {
-				const dups = new Set([]);
-				return t("div", {
-					class: "section",
-				}, [
-					t("div", { class: "title", }, sec.name),
-					t("div", {}, sec.entries.map((mem) => {
-						if (!mem.name || dups.has(mem.name)) {
-							return;
-						}
-						dups.add(mem.name);
-						let name = mem.name;
-						if (mem.kind === "MethodSignature") {
-							name += "()";
-						}
-						return t("a", { href: `#${mem.name}`, }, name);
-					})),
-				]);
-			})),
+			www.spacer(12),
+			t("input", { id: "themeswitch", type: "checkbox", name: "themeswitch", style: "display: none" }, ""),
+			t("label", { for: "themeswitch", class: "switch theme", }, [
+				t("div", { class: "strip", }, [
+					t("div", { class: "ball", }, []),
+				]),
+			]),
+			www.spacer(24),
+			t("div", { id: "index" }, [
+				t("div", { class: "section" }, [
+					t("div", { class: "title", }, "Tutorials"),
+					t("a", { href: "/doc/setup.md", }, "Setup"),
+					t("a", { href: "/doc/intro.md", }, "Intro"),
+					t("a", { href: "/doc/comp.md", }, "Component"),
+				]),
+				...sections.map((sec) => {
+					const dups = new Set([]);
+					return t("div", { class: "section", }, [
+						t("div", { class: "title", }, sec.name),
+						t("div", {}, sec.entries.map((mem) => {
+							if (!mem.name || dups.has(mem.name)) {
+								return;
+							}
+							dups.add(mem.name);
+							let name = mem.name;
+							if (mem.kind === "MethodSignature") {
+								name += "()";
+							}
+							return t("a", { href: `#${mem.name}`, }, name);
+						})),
+					]);
+				}),
+			]),
 		]),
 		t("div", { id: "content", }, [
 			block("Intro", [
@@ -339,36 +353,14 @@ import kaboom from "https://unpkg.com/kaboom@next/dist/kaboom.mjs";
 // initialize kaboom context
 kaboom();
 
-// load the default sprite "bean"
-loadBean();
-
-// add a game obj to screen, from a list of components
-const froggy = add([
-    sprite("bean", 32),
+// add a piece of text at position (120, 80)
+add([
+    text("hello"),
     pos(120, 80),
-    area(),
-    body(),
 ]);
 
-// add a platform
-add([
-	pos(0, 480),
-	rect(width(), 48),
-	outline(4),
-	solid(),
-	area(),
-	color(127, 200, 255),
-])
-
-// jump when user presses "space"
-keyPress("space", () => {
-    froggy.jump();
-});
-
-// move input focus to the game
-focus();
-
 </script>
+
 				`, "html"),
 				txt(["It's recommended to code directly in browser with the Kaboom template on ", t("a", { href: "https://replit.com/@replit/Kaboom" }, "Replit.com")]),
 				txt("Also can be used with NPM"),
@@ -413,9 +405,8 @@ kaboom();
 					name !== "KaboomCtx" && t("div", { class: "type", }, renderStmt(mem)),
 				]);
 			})),
-			block("Custom Component", [
-			]),
 		]),
+		t("script", { src: "/site/js/doc.js", }, ""),
 	]),
 ]);
 

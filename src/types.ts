@@ -212,7 +212,7 @@ interface KaboomCtx {
 	 */
 	opacity(o?: number): OpacityComp,
 	/**
-	 * Renders as sprite.
+	 * Render as a sprite.
 	 *
 	 * @example
 	 * ```js
@@ -239,7 +239,7 @@ interface KaboomCtx {
 	 */
 	sprite(spr: string | SpriteData, conf?: SpriteCompConf): SpriteComp,
 	/**
-	 * Renders as text.
+	 * Render as text.
 	 *
 	 * @example
 	 * ```js
@@ -261,12 +261,13 @@ interface KaboomCtx {
 	 */
 	text(txt: string, conf?: TextCompConf): TextComp,
 	/**
-	 * Renders as rect.
+	 * Render as a rectangle.
 	 *
 	 * @example
 	 * ```js
-	 * // i don't know, could be an obstacle or somethign
+	 * // i don't know, could be an obstacle or something
 	 * add([
+	 *     pos(80, 120),
 	 *     rect(20, 40),
 	 *     outline(4),
 	 *     area(),
@@ -274,6 +275,30 @@ interface KaboomCtx {
 	 * ```
 	 */
 	rect(w: number, h: number): RectComp,
+	/**
+	 * Render as a circle.
+	 *
+	 * @example
+	 * ```js
+	 * add([
+	 *     pos(80, 120),
+	 *     circle(16),
+	 * ]);
+	 * ```
+	 */
+	circle(radius: number): CircleComp,
+	/**
+	 * Render as a UV quad.
+	 *
+	 * @example
+	 * ```js
+	 * add([
+	 *     uvquad(width(), height()),
+	 *     shader("spiral"),
+	 * ]);
+	 * ```
+	 */
+	uvquad(w: number, h: number): UVQuadComp,
 	/**
 	 * Collider. Will calculate from rendered comps (e.g. from sprite, text, rect) if no params given.
 	 *
@@ -302,38 +327,15 @@ interface KaboomCtx {
 	 * // die if player collides with another game obj with tag "tree"
 	 * player.collides("tree", () => {
 	 *     destroy(player);
+	 *     go("lose");
 	 * });
 	 *
-	 * // push player out of all other game obj with "solid" component
-	 * player.action(() => {
-	 *     player.pushOutAll();
-	 * });
-	 *
-	 * // simple drag an drop
-	 * let draggin = false;
-	 *
-	 * player.clicks(() => {
-	 *     draggin = true;
-	 * });
-	 *
-	 * player.action(() => {
-	 *     if (draggin) {
-	 *         player.pos = mousePos();
-	 *     }
-	 * })
-	 *
-	 * mouseRelease(() => {
-	 *     draggin = false;
-	 * });
-	 *
-	 * // check for collision with another single game obj
+	 * // check for collision manually every frame instead of registering an event
 	 * player.action(() => {
 	 *     if (player.isColliding(bomb)) {
 	 *         score += 1;
 	 *     }
 	 * });
-	 *
-	 * // for more methods check out AreaComp
 	 * ```
 	 */
 	area(conf?: AreaCompConf): AreaComp,
@@ -1251,11 +1253,11 @@ interface KaboomCtx {
 	 */
 	dir(deg: number): Vec2,
 	/**
-	 * Sin() motion between 2 values.
+	 * Interpolate between 2 values (default using Math.sin motion).
 	 *
 	 * @example
 	 * ```js
-	 * // change color with sin() like motion
+	 * // bounce color between 2 values as time goes on
 	 * action("colorful", (c) => {
 	 *     c.color.r = wave(0, 255, time());
 	 *     c.color.g = wave(0, 255, time() + 1);
@@ -1263,7 +1265,7 @@ interface KaboomCtx {
 	 * });
 	 * ```
 	 */
-	wave(lo: number, hi: number, t: number): number,
+	wave(lo: number, hi: number, t: number, func?: (x: number) => number): number,
 	/**
 	 * Convert degrees to radians.
 	 */
@@ -1276,8 +1278,22 @@ interface KaboomCtx {
 	 * Make a new random number generator.
 	 */
 	rng(seed: number): RNG,
-	colLineLine(l1: Line, l2: Line): Vec2 | null,
-	colRectRect(r1: Rect, r2: Rect): boolean,
+	/**
+	 * Check if 2 lines intersects, if yes returns the intersection point.
+	 */
+	testLineLine(l1: Line, l2: Line): Vec2 | null,
+	/**
+	 * Check if 2 rectangle overlaps.
+	 */
+	testRectRect(r1: Rect, r2: Rect): boolean,
+	/**
+	 * Check if a line and a rectangle overlaps.
+	 */
+	testRectLine(r: Rect, l: Line): boolean,
+	/**
+	 * Check if a point is inside a rectangle.
+	 */
+	testRectPt(r: Rect, pt: Vec2): boolean,
 	/**
 	 * Define a scene.
 	 *
@@ -1345,13 +1361,73 @@ interface KaboomCtx {
 	 *
 	 * @section Render
 	 */
-	drawSprite(id: string | SpriteData, conf?: DrawSpriteConf): void,
-	// TODO: conf type
-	drawText(txt: string, conf?: {}): void,
-	drawRect(pos: Vec2, w: number, h: number, conf?: DrawRectConf): void,
-	drawRectStroke(pos: Vec2, w: number, h: number, conf?: DrawRectStrokeConf): void,
-	drawLine(p1: Vec2, p2: Vec2, conf?: DrawLineConf): void,
-	drawTri(p1: Vec2, p2: Vec2, p3: Vec2, conf?: DrawTriConf): void,
+	drawSprite(conf: DrawSpriteConf): void,
+	/**
+	 * Draw a piece of text.
+	 */
+	drawText(conf: DrawTextConf): void,
+	/**
+	 * Draw a rectangle.
+	 */
+	drawRect(conf: DrawRectConf): void,
+	/**
+	 * Draw a line.
+	 */
+	drawLine(conf: DrawLineConf): void,
+	/**
+	 * Draw lines.
+	 */
+	drawLines(conf: DrawLinesConf): void,
+	/**
+	 * Draw a triangle.
+	 */
+	drawTri(conf: DrawTriConf): void,
+	/**
+	 * Draw a circle.
+	 */
+	drawCircle(conf: DrawCircleConf): void,
+	/**
+	 * Draw an ellipse.
+	 */
+	drawEllipse(conf: DrawEllipseConf): void,
+	/**
+	 * Draw a convex polygon from a list of vertices.
+	 */
+	drawPoly(conf: DrawPolyConf): void,
+	/**
+	 * Draw a rectangle with UV data.
+	 */
+	drawUVQuad(conf: DrawUVQuadConf): void,
+	/**
+	 * Push current transform matrix to the transform stack.
+	 *
+	 * @example
+	 * ```js
+	 * pushTransform();
+	 *
+	 * // these transforms will affect every render until popTransform()
+	 * pushTranslate(120, 200);
+	 * pushRotate(time() * 120);
+	 * pushScale(6);
+	 *
+	 * drawSprite("froggy");
+	 * drawCircle(vec2(0), 120);
+	 *
+	 * // restore the transformation stack to when last pushed
+	 * popTransform();
+	 * ```
+	 */
+	pushTransform(): void,
+	/**
+	 * Pop the topmost transform matrix from the transform stack.
+	 */
+	popTransform(): void,
+	pushTranslate(x: number, y: number): void,
+	pushTranslate(p: Vec2): void,
+	pushScale(x: number, y: number): void,
+	pushScale(s: number): void,
+	pushScale(s: Vec2): void,
+	pushRotate(angle: number): void,
 	/**
 	 * Import a plugin.
 	 */
@@ -1792,55 +1868,191 @@ interface GfxTexConf {
 	wrap?: TexWrap,
 }
 
+/**
+ * Common render properties.
+ */
 interface RenderProps {
 	pos?: Vec2,
 	scale?: Vec2 | number,
-	rot?: number,
+	angle?: number,
 	color?: Color,
 	opacity?: number,
-	origin?: Origin | Vec2,
-	z?: number,
 	prog?: GfxProgram,
 	uniform?: Uniform,
 }
 
-type DrawQuadConf = RenderProps & {
-	flipX?: boolean,
-	flipY?: boolean,
-	width?: number,
-	height?: number,
-	tex?: GfxTexture,
-	quad?: Quad,
-}
-
-type DrawTextureConf = RenderProps & {
-	flipX?: boolean,
-	flipY?: boolean,
+/**
+ * How the sprite should look like.
+ */
+type DrawSpriteConf = RenderProps & {
+	/**
+	 * The sprite name in the asset manager, or the raw sprite data.
+	 */
+	sprite: string | SpriteData,
+	frame?: number,
 	width?: number,
 	height?: number,
 	tiled?: boolean,
+	flipX?: boolean,
+	flipY?: boolean,
 	quad?: Quad,
+	origin?: Origin | Vec2,
 }
 
-type DrawRectStrokeConf = RenderProps & {
-	width?: number,
+type DrawUVQuadConf = RenderProps & {
+	width: number,
+	height: number,
+	flipX?: boolean,
+	flipY?: boolean,
+	tex?: GfxTexture,
+	quad?: Quad,
+	origin?: Origin | Vec2,
 }
 
+/**
+ * How the rectangle should look like.
+ */
 type DrawRectConf = RenderProps & {
+	width: number,
+	height: number,
+	outline?: Outline,
+	fill?: boolean,
+	radius?: number,
+	origin?: Origin | Vec2,
 }
 
-type DrawLineConf = RenderProps & {
+/**
+ * How the line should look like.
+ */
+type DrawLineConf = Omit<RenderProps, "angle" | "scale"> & {
+	/**
+	 * Starting point of the line.
+	 */
+	p1: Vec2,
+	/**
+	 * Ending point of the line.
+	 */
+	p2: Vec2,
 	width?: number,
 }
 
-type DrawTriConf = RenderProps & {
+/**
+ * How the lines should look like.
+ */
+type DrawLinesConf = Omit<RenderProps, "angle" | "scale"> & {
+	/**
+	 * The points that should be connected with a line.
+	 */
+	pts: Vec2[],
+	width?: number,
+	radius?: number,
 }
 
+/**
+ * How the triangle should look like.
+ */
+type DrawTriConf = RenderProps & {
+	/**
+	 * First point of triangle.
+	 */
+	p1: Vec2,
+	/**
+	 * Second point of triangle.
+	 */
+	p2: Vec2,
+	/**
+	 * Third point of triangle.
+	 */
+	p3: Vec2,
+	outline?: Outline,
+	fill?: boolean,
+	radius?: number,
+}
+
+/**
+ * How the circle should look like.
+ */
+type DrawCircleConf = Omit<RenderProps, "angle"> & {
+	/**
+	 * Radius of the circle.
+	 */
+	radius: number,
+	/**
+	 * Starting angle.
+	 */
+	start?: number,
+	/**
+	 * Ending angle.
+	 */
+	end?: number,
+	outline?: Outline,
+	fill?: boolean,
+	resolution?: number,
+	origin?: Origin | Vec2,
+}
+
+/**
+ * How the ellipse should look like.
+ */
+type DrawEllipseConf = RenderProps & {
+	/**
+	 * The horizontal radius.
+	 */
+	radiusX: number,
+	/**
+	 * The vertical radius.
+	 */
+	radiusY: number,
+	/**
+	 * Starting angle.
+	 */
+	start?: number,
+	/**
+	 * Ending angle.
+	 */
+	end?: number,
+	outline?: Outline,
+	fill?: boolean,
+	resolution?: number,
+}
+
+/**
+ * How the polygon should look like.
+ */
+type DrawPolyConf = RenderProps & {
+	/**
+	 * The points that make up the polygon
+	 */
+	pts: Vec2[],
+	outline?: Outline,
+	fill?: boolean,
+	/**
+	 * Optionally provide manual triangulation.
+	 */
+	indices?: number[],
+	offset?: Vec2,
+	radius?: number,
+}
+
+interface Outline {
+	width?: number,
+	color?: Color,
+}
+
+/**
+ * How the text should look like.
+ */
 type DrawTextConf = RenderProps & {
+	text: string,
+	font?: string,
 	size?: number,
 	width?: number,
+	origin?: Origin | Vec2,
 }
 
+/**
+ * One formated character.
+ */
 interface FormattedChar {
 	tex: GfxTexture,
 	quad: Quad,
@@ -1852,6 +2064,9 @@ interface FormattedChar {
 	origin: string,
 }
 
+/**
+ * Formatted text with info on how and where to render each character.
+ */
 interface FormattedText {
 	width: number,
 	height: number,
@@ -1909,18 +2124,6 @@ type Origin =
 	| "bot"
 	| "botright"
 	;
-
-type DrawSpriteConf = RenderProps & {
-	frame?: number,
-	width?: number,
-	height?: number,
-	tiled?: boolean,
-	flipX?: boolean,
-	flipY?: boolean,
-	quad?: Quad,
-	prog?: ShaderData,
-	uniform?: Uniform,
-}
 
 interface Vec2 {
 	x: number,
@@ -2270,14 +2473,6 @@ interface AreaComp extends Comp {
 	pushOut(obj: Character): void,
 	/**
 	 * Push out from all other solid game objs if currently overlapping.
-	 *
-	 * @example
-	 * ```js
-	 * // make player won't move through solid() objs
-	 * player.action(() => {
-	 *     player.pushOutAll();
-	 * });
-	 * ```
 	 */
 	pushOutAll(): void,
 	/**
@@ -2425,6 +2620,24 @@ interface RectComp extends Comp {
 	height: number,
 }
 
+interface CircleComp extends Comp {
+	/**
+	 * Radius of circle.
+	 */
+	radius: number,
+}
+
+interface UVQuadComp extends Comp {
+	/**
+	 * Width of rect.
+	 */
+	width: number,
+	/**
+	 * Height of height.
+	 */
+	height: number,
+}
+
 type AreaType =
 	| "rect"
 	| "line"
@@ -2434,8 +2647,7 @@ type AreaType =
 	;
 
 interface OutlineComp extends Comp {
-	lineWidth: number,
-	lineColor: Color,
+	outline: Outline,
 }
 
 interface Debug {
@@ -2649,7 +2861,7 @@ interface LevelConf {
 	/**
 	 * Called when encountered an undefined symbol.
 	 */
-	any(s: string): CompList<any> | undefined,
+	any(s: string, pos: Vec2): CompList<any> | undefined,
 	// TODO: should return CompList<any>
 	[sym: string]: any,
 }

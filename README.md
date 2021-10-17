@@ -10,7 +10,7 @@
 
 (these are for the newest beta version or `kaboom@next`)
 
-Lots of iteractive examples [here](https://kaboomjs.com/demo)
+Lots of interactive examples [here](https://kaboomjs.com/demo)
 
 ```html
 <script type="module">
@@ -33,7 +33,7 @@ You can paste this directly into an `.html` file, open it in browser, and start 
 
 Kaboom uses a powerful component system to compose game objects and behaviors.
 To make a flappy bird movement you only need a few lines
-```js
+```javascript
 // init context
 kaboom();
 
@@ -56,7 +56,7 @@ keyPress("space", () => {
 ```
 
 It's easy to make custom components to compose your game object behaviors:
-```js
+```javascript
 // add a game obj to the scene from a list of component
 const player = add([
     // it renders as a sprite
@@ -88,7 +88,7 @@ player.collides("enemy", () => {
 ```
 
 Blocky imperative syntax for describing behaviors
-```js
+```javascript
 // check fall death
 player.action(() => {
     if (player.pos.y >= height()) {
@@ -121,7 +121,7 @@ keyDown("w", () => {
 $ npm install kaboom@next
 ```
 
-```js
+```javascript
 import kaboom from "kaboom";
 
 kaboom();
@@ -134,7 +134,7 @@ add([
 
 also works with CJS
 
-```js
+```javascript
 const kaboom = require("kaboom");
 ```
 
@@ -165,8 +165,8 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 ## Dev
 
 1. `npm run setup` to setup first time (installing dev packages)
-1. `npm run dev` to watch & build lib
-1. go to http://localhost:8000/demo
+1. `npm run dev` to watch & build lib and the website (the website might take some time to build for the first time)
+1. go to http://localhost:3000/play
 1. edit demos in `demo/` to test
 1. make sure not to break any existing demos
 

@@ -448,6 +448,7 @@ interface KaboomCtx {
 	 * const score = add([
 	 *     text(0),
 	 *     pos(12, 12),
+	 *     fixed(),
 	 * ]);
 	 * ```
 	 */
@@ -462,7 +463,7 @@ interface KaboomCtx {
 	 *     add([
 	 *         sprite("explosion", { anim: "burst", }),
 	 *         stay(),
-	 *         lifespan(2),
+	 *         lifespan(1),
 	 *     ]);
 	 *     go("lose", score);
 	 * });
@@ -504,10 +505,10 @@ interface KaboomCtx {
 	 *
 	 * @example
 	 * ```js
-	 * // spawn an explosion, destroy after 2 seconds and the switch scene
+	 * // spawn an explosion, destroy after 1 seconds, start fading away after 0.5 second
 	 * add([
 	 *     sprite("explosion", { anim: "burst", }),
-	 *     lifespan(2, () => go("lose")),
+	 *     lifespan(1, { fade: 0.5 }),
 	 * ]);
 	 * ```
 	 */
@@ -568,7 +569,7 @@ interface KaboomCtx {
 	collides(
 		t1: Tag,
 		t2: Tag,
-		cb: (a: Character, b: Character, side?: RectSide) => void,
+		cb: (a: Character, b: Character, col?: Collision) => void,
 	): EventCanceller,
 	/**
 	 * Register event when game objs with certain tags are clicked. This function spins off an action() when called, please put it at root level and never inside another action().
@@ -2392,12 +2393,35 @@ interface MoveComp extends Comp {
 interface CleanupComp extends Comp {
 }
 
-type RectSide =
-	| "top"
-	| "bottom"
-	| "left"
-	| "right"
-	;
+/**
+ * Collision resolution data.
+ */
+interface Collision {
+	/**
+	 * The game object that we collided into.
+	 */
+	target: Character,
+	/**
+	 * The displacement it'll need to separate us from the target.
+	 */
+	displacement: Vec2,
+	/**
+	 * If the collision happened (roughly) on the top side of us.
+	 */
+	isTop(): boolean,
+	/**
+	 * If the collision happened (roughly) on the bottom side of us.
+	 */
+	isBottom(): boolean,
+	/**
+	 * If the collision happened (roughly) on the left side of us.
+	 */
+	isLeft(): boolean,
+	/**
+	 * If the collision happened (roughly) on the right side of us.
+	 */
+	isRight(): boolean,
+}
 
 interface AreaCompConf {
 	/**
@@ -2462,7 +2486,7 @@ interface AreaComp extends Comp {
 	/**
 	 * Registers an event runs when collides with another game obj with certain tag.
 	 */
-	collides(tag: Tag, f: (obj: Character, side?: RectSide) => void): void,
+	collides(tag: Tag, f: (obj: Character, col?: Collision) => void): void,
 	/**
 	 * If has a certain point inside collider.
 	 */

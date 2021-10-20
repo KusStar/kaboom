@@ -1,4 +1,4 @@
-### kaboom2000 (unreleased)
+# v2000.0.0 "The New Era"
 - version jumped to v2000.0.0 (still semver, just big)
 - added `burp()` for easy burping
 - added decent typescript / autocomplete support and jsdocs
@@ -198,6 +198,9 @@ addLevel([
 ```
 - **BREAK** renamed `clearColor` to `background`
 - added collision detection functions `testLineLine()`, `testRectRect()`, `testRectLine()` etc.
+- added drawing functions `drawSprite()`, `drawRect()`, `drawCircle()`, `drawPolygon()`, `drawEllipse()`, `drawLine()`, `drawLines()`
+- added transformation functions `pushTransform()`, `popTransform()`, `pushTranslate()`, `pushRotate()`, `pushScale()`
+- **BREAK** removed `areaWidth()` and `areaHeight()` since they won't make sense if the area shape is not rectangle, use `worldArea()` if you need area data
 
 ### v0.5.1
 - added plugins npm package support e.g. `import asepritePlugin from "kaboom/plugins/aseprite"`

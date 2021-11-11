@@ -140,8 +140,6 @@ import {
 	Recording,
 } from "./types";
 
-import kaboomPlugin from "./plugins/kaboom";
-
 export default (gopt: KaboomOpt = {}): KaboomCtx => {
 
 const audio = audioInit();
@@ -2737,8 +2735,6 @@ const ctx: KaboomCtx = {
 	// dom
 	canvas: app.canvas,
 };
-
-plug(kaboomPlugin);
 
 if (gopt.plugins) {
 	gopt.plugins.forEach(plug);

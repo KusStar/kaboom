@@ -2,45 +2,20 @@
 
 [**Kaboom.js**](https://kaboomjs.com/) is a JavaScript library that helps you make games fast and fun!
 
-**NOTE**: still in early active development, expect breaking changes and lots of new features (check out `CHANGELOG.md` for these).
+Start playing around with it in the [Kaboom Playground](https://kaboomjs.com/play)
 
 ## This fork shrink bundle(dist/kaboom.*js) from 18XK to 6XK(removed some images and audio), based on kaboom@next
 
 ## Examples
 
-(these are for the newest beta version or `kaboom@next`)
-
-Lots of interactive examples [here](https://kaboomjs.com/demo)
-
-```html
-<script type="module">
-
-// import kaboom lib
-import kaboom from "https://unpkg.com/kaboom@next/dist/kaboom.mjs";
-
-// initialize kaboom context
+```js
+// initialize context
 kaboom();
 
-// add a piece of text at position (120, 80)
-add([
-    text("hello"),
-    pos(120, 80),
-]);
+// load a sprite called "froggy"
+loadSprite("froggy", "sprites/froggy.png");
 
-</script>
-```
-You can paste this directly into an `.html` file, open it in browser, and start playing around!
-
-Kaboom uses a powerful component system to compose game objects and behaviors.
-To make a flappy bird movement you only need a few lines
-```javascript
-// init context
-kaboom();
-
-// load a default sprite "bean"
-loadBean();
-
-// compose the player game object from multiple components
+// compose the player game object from multiple components and add it to the game
 const froggy = add([
     sprite("bean"),
     pos(80, 40),
@@ -49,14 +24,15 @@ const froggy = add([
 ]);
 
 // press space to jump
-keyPress("space", () => {
+onKeyPress("space", () => {
     // this method is provided by the "body" component above
     froggy.jump();
 });
 ```
 
-It's easy to make custom components to compose your game object behaviors:
-```javascript
+Kaboom uses a powerful component system to compose game objects and behaviors.
+
+```js
 // add a game obj to the scene from a list of component
 const player = add([
     // it renders as a sprite
@@ -69,7 +45,7 @@ const player = add([
     body(),
     // it has 8 health
     health(8),
-    // or give it tags for controlling group behaviors
+    // or give it tags for easier group behaviors
     "player",
     "friendly",
     // plain objects fields are directly assigned to the game obj
@@ -79,36 +55,37 @@ const player = add([
         speed: 240,
     },
 ]);
-
-// .collides() comes from "area" component
-player.collides("enemy", () => {
-    // .hurt() comes from "health" component
-    player.hurt(1)
-});
 ```
 
 Blocky imperative syntax for describing behaviors
-```javascript
+
+```js
+// .onCollide() comes from "area" component
+player.onCollide("enemy", () => {
+    // .hurt() comes from "health" component
+    player.hurt(1)
+});
+
 // check fall death
-player.action(() => {
+player.onUpdate(() => {
     if (player.pos.y >= height()) {
         destroy(player);
         gameOver();
     }
 });
 
-// if 'player' collides with any object with tag "enemy", run the callback
-player.collides("enemy", () => {
+// if 'player' onCollide with any object with tag "enemy", run the callback
+player.onCollide("enemy", () => {
     player.hp -= 1;
 });
 
 // all objects with tag "enemy" will move towards 'player' every frame
-action("enemy", (e) => {
+onUpdate("enemy", (e) => {
     e.move(player.pos.sub(e.pos).unit().scale(e.speed));
 });
 
 // move up 100 pixels per second every frame when "w" key is held down
-keyDown("w", () => {
+onKeyDown("w", () => {
     player.move(0, 100);
 });
 ```
@@ -118,10 +95,10 @@ keyDown("w", () => {
 ### NPM
 
 ```sh
-$ npm install kaboom@next
+$ npm install kaboom
 ```
 
-```javascript
+```js
 import kaboom from "kaboom";
 
 kaboom();
@@ -132,9 +109,9 @@ add([
 ]);
 ```
 
-also works with CJS
+also works with CommonJS
 
-```javascript
+```js
 const kaboom = require("kaboom");
 ```
 
@@ -145,7 +122,7 @@ Note that you'll need to use a bundler like `esbuild` or `webpack` to use Kaboom
 This exports a global `kaboom` function
 
 ```html
-<script src="https://unpkg.com/kaboom@next/dist/kaboom.js"></script>
+<script src="https://unpkg.com/kaboom/dist/kaboom.js"></script>
 <script>
 kaboom();
 </script>
@@ -155,7 +132,7 @@ or use with es modules
 
 ```html
 <script type="module">
-import kaboom from "https://unpkg.com/kaboom@next/dist/kaboom.mjs";
+import kaboom from "https://unpkg.com/kaboom/dist/kaboom.mjs";
 kaboom();
 </script>
 ```
@@ -186,5 +163,5 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 - Featured on [Console 50](https://console.substack.com/p/console-50)
 - Thanks to [Umayr](https://github.com/umayr) for kindly offering the "kaboom" npm package name
 - Please buy fireworks on [kaboom.com](http://www.kaboom.com/)
-- Old v5.0 website [here](https://kaboomold.slmjkdbtl.repl.co/)
+- Documentation for v0.5 [here](https://kaboomlegacy.repl.co/)
 - [How to do a KABOOM on a Trampoline](https://www.youtube.com/watch?v=3CemcWdc_Hc)

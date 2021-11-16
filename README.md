@@ -4,7 +4,7 @@
 
 Start playing around with it in the [Kaboom Playground](https://kaboomjs.com/play)
 
-## This fork shrink bundle(dist/kaboom.*js) from 18XK to 6XK(removed some images and audio), based on kaboom@next
+## This fork shrink bundle(dist/kaboom.*js) from 18XK to 6XK(removed some images and audio), based on kaboom@2000.x
 
 ## Examples
 
@@ -147,11 +147,15 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 1. edit demos in `demo/` to test
 1. make sure not to break any existing demos
 
+also check out [CONTRIBUTION.md](CONTRIBUTING.md)
+
 ## Community
 
 [Github Discussions](https://github.com/replit/kaboom/discussions)
 
 [Discord](https://discord.gg/aQ6RuQm3TF)
+
+[Twitter](https://twitter.com/Kaboomjs)
 
 ### Misc
 

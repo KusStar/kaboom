@@ -24,6 +24,10 @@ import {
 } from "./types";
 
 // @ts-ignore
+import apl386Src from "./apl386.png";
+// @ts-ignore
+import apl386oSrc from "./apl386o.png";
+// @ts-ignore
 import sinkSrc from "./sink.png";
 
 type AssetsOpt = {

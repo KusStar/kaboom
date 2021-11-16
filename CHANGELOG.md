@@ -1,3 +1,11 @@
+### v2000.1.4
+
+- fixed `state()` to not require registering `onStateUpdate()` before using any state
+
+### v2000.1.2
+
+- fixed `onKeyRelease()` wrongfully check for key press instead of release
+
 ### v2000.1.1
 
 - fixed `StateComp#enterState()` not accepting any state
